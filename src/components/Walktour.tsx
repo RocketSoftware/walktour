@@ -52,6 +52,7 @@ export interface WalktourOptions {
 
 export interface Step extends WalktourOptions {
   selector: string;
+  secondarySelectors?: string[]; 
   title?: string;
   description: string;
 }
@@ -95,6 +96,7 @@ export const Walktour = (props: WalktourProps) => {
   const controlled = isOpen !== undefined;
   const [isOpenState, setIsOpenState] = React.useState<boolean>(isOpen == undefined);
   const [target, setTarget] = React.useState<HTMLElement>(undefined);
+  const [secondaryTargets, setSecondaryTargets] = React.useState<HTMLElement[]>(undefined);
   const [tooltipPosition, setTooltipPosition] = React.useState<Coords>(undefined);
   const [currentStepIndex, setCurrentStepIndex] = React.useState<number>(initialStepIndex || 0);
   const [tourRoot, setTourRoot] = React.useState<Element>(undefined);
@@ -374,6 +376,7 @@ export const Walktour = (props: WalktourProps) => {
           <Mask
             maskId={getIdString(baseMaskString, identifier)}
             target={target}
+            secondaryTargets={secondaryTargets}
             disableMaskInteraction={disableMaskInteraction}
             disableCloseOnClick={disableCloseOnClick}
             disableMask={disableMask}

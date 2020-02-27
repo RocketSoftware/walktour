@@ -12,6 +12,7 @@ interface MaskProps {
   disableCloseOnClick?: boolean;
   disableMask?: boolean;
   maskId: string;
+  secondaryTargets: HTMLElement[];
   
 }
 
