@@ -48,16 +48,16 @@ export interface WalktourOptions {
   allowForeignTarget?: boolean;
   nextOnTargetClick?: boolean;
   validateNextOnTargetClick?: () => Promise<boolean>;
+  hideNext?: boolean;
+  hidePrev?: boolean; 
+  hideClose?: boolean;
+  secondarySelectors?: string[]; 
 }
 
 export interface Step extends WalktourOptions {
   selector: string;
-  secondarySelectors?: string[]; 
   title?: string;
   description: string;
-  hideNext?: boolean;
-  hidePrev?: boolean; 
-  hideClose?: boolean;
 }
 
 export interface WalktourProps extends WalktourOptions {
