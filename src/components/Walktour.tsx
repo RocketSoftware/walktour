@@ -148,6 +148,7 @@ export const Walktour = (props: WalktourProps) => {
     allowForeignTarget,
     nextOnTargetClick,
     validateNextOnTargetClick,
+    secondarySelectors,
   } = options;
 
   React.useEffect(() => {
@@ -202,6 +203,7 @@ export const Walktour = (props: WalktourProps) => {
 
     if (!root || !tooltipContainer) {
       setTarget(null);
+      setSecondaryTargets(null);
       setTooltipPosition(null);
       targetPosition.current = null;
       targetSize.current = null;
@@ -230,6 +232,12 @@ export const Walktour = (props: WalktourProps) => {
     setTooltipPosition(tooltipPosition);
     targetPosition.current = currentTargetPosition;
     targetSize.current = currentTargetDims;
+
+    if (secondarySelectors !== undefined) {
+    setSecondaryTargets(secondarySelectors.map(secondarySelector => targetScope.querySelector(secondarySelector)));
+    }else{
+      setSecondaryTargets(undefined);
+    }
 
     //focus trap subroutine
     const cleanupFocusTrap = setFocusTrap(tooltipContainer, currentTarget, disableMaskInteraction);
