@@ -12,16 +12,16 @@ interface MaskProps {
   disableCloseOnClick?: boolean;
   disableMask?: boolean;
   maskId: string;
+  secondaryTargets?: HTMLElement[];
   
 }
 
 export function Mask(props: MaskProps): JSX.Element {
-  const { target, disableMaskInteraction, padding, tourRoot, close, disableCloseOnClick, maskId, disableMask } = props;
+  const { target, disableMaskInteraction, padding, tourRoot, close, disableCloseOnClick, maskId, disableMask, secondaryTargets } = props;
   const {width: containerWidth, height: containerHeight} = getViewportScrollDims(tourRoot);
   const pathId = `clip-path-${maskId}`;
 
-
-  const getCutoutPoints = (target: HTMLElement): string => {
+  const calculateCutout = (target: HTMLElement): string => {
     if (!target) {
       return '';
     }
@@ -34,9 +34,7 @@ export function Mask(props: MaskProps): JSX.Element {
     const cutoutRight: number = coords.x + targetDims.width + padding;
     const cutoutBottom: number = coords.y + targetDims.height + padding;
 
-    return `0 0, 
-            0 ${containerHeight}, 
-            ${cutoutLeft} ${containerHeight}, 
+    return `${cutoutLeft} ${containerHeight}, 
             ${cutoutLeft} ${cutoutTop}, 
             ${cutoutRight} ${cutoutTop}, 
             ${cutoutRight} ${cutoutBottom}, 
@@ -44,6 +42,24 @@ export function Mask(props: MaskProps): JSX.Element {
             ${cutoutLeft} ${containerHeight}, 
             ${containerWidth} ${containerHeight}, 
             ${containerWidth} 0`;
+  }
+
+  const getCutoutPoints = (target: HTMLElement): string => {
+    if (!target) {
+      return '';
+    }
+
+    if (secondaryTargets === undefined) {
+      return `0 0, 
+              0 ${containerHeight}, 
+              ` + calculateCutout(target);
+    }else{
+      return `0 0, 
+            0 ${containerHeight},` +
+            calculateCutout(target) + `,` + secondaryTargets.map((secondaryTarget) => {
+              return calculateCutout(secondaryTarget);
+            });
+    }
   }
 
   const svgStyle: React.CSSProperties = {

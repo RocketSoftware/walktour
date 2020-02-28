@@ -52,6 +52,7 @@ export interface WalktourOptions {
 
 export interface Step extends WalktourOptions {
   selector: string;
+  secondarySelectors?: string[]; 
   title?: string;
   description: string;
   hideNext?: boolean;
@@ -98,6 +99,7 @@ export const Walktour = (props: WalktourProps) => {
   const controlled = isOpen !== undefined;
   const [isOpenState, setIsOpenState] = React.useState<boolean>(isOpen == undefined);
   const [target, setTarget] = React.useState<HTMLElement>(undefined);
+  const [secondaryTargets, setSecondaryTargets] = React.useState<HTMLElement[]>(undefined);
   const [tooltipPosition, setTooltipPosition] = React.useState<Coords>(undefined);
   const [currentStepIndex, setCurrentStepIndex] = React.useState<number>(initialStepIndex || 0);
   const [tourRoot, setTourRoot] = React.useState<Element>(undefined);
@@ -149,6 +151,7 @@ export const Walktour = (props: WalktourProps) => {
     allowForeignTarget,
     nextOnTargetClick,
     validateNextOnTargetClick,
+    secondarySelectors,
   } = options;
 
   React.useEffect(() => {
@@ -203,6 +206,7 @@ export const Walktour = (props: WalktourProps) => {
 
     if (!root || !tooltipContainer) {
       setTarget(null);
+      setSecondaryTargets(null);
       setTooltipPosition(null);
       targetPosition.current = null;
       targetSize.current = null;
@@ -231,6 +235,12 @@ export const Walktour = (props: WalktourProps) => {
     setTooltipPosition(tooltipPosition);
     targetPosition.current = currentTargetPosition;
     targetSize.current = currentTargetDims;
+
+    if (secondarySelectors !== undefined) {
+    setSecondaryTargets(secondarySelectors.map(secondarySelector => targetScope.querySelector(secondarySelector)));
+    }else{
+      setSecondaryTargets(undefined);
+    }
 
     //focus trap subroutine
     const cleanupFocusTrap = setFocusTrap(tooltipContainer, currentTarget, disableMaskInteraction);
@@ -377,6 +387,7 @@ export const Walktour = (props: WalktourProps) => {
           <Mask
             maskId={getIdString(baseMaskString, identifier)}
             target={target}
+            secondaryTargets={secondaryTargets}
             disableMaskInteraction={disableMaskInteraction}
             disableCloseOnClick={disableCloseOnClick}
             disableMask={disableMask}
