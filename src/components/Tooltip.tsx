@@ -20,6 +20,9 @@ export function Tooltip(props: TooltipProps) {
       disableClose,
       disableNext,
       disablePrev,
+      hideNext,
+      hidePrev,
+      hideClose,
       nextLabel,
       prevLabel,
       closeLabel,
@@ -63,6 +66,7 @@ export function Tooltip(props: TooltipProps) {
         ? customFooterRenderer(props)
         : (
           <div style={styles.footer}>
+            {!hideClose && 
             <button 
             onClick={() => close()} 
             style={{...styles.tertiaryButton, ...disableClose && styles.disabledButton}}
@@ -70,6 +74,8 @@ export function Tooltip(props: TooltipProps) {
             >
               {closeLabel || "close"}
             </button>
+            }
+            {!hidePrev &&
             <button
               onClick={prev}
               disabled={prevDisabled}
@@ -77,13 +83,16 @@ export function Tooltip(props: TooltipProps) {
             >
               {prevLabel || "prev"}
             </button>
+            }
+            {!hideNext && 
             <button
               onClick={() => next()}
               disabled={nextDisabled}
               style={{...styles.primaryButton, ...nextDisabled && styles.disabledButton}}
             >
               {nextLabel || "next"}
-            </button>
+            </button> 
+            }
           </div>
         )}
     </div>

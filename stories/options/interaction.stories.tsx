@@ -3,12 +3,13 @@ import { playgroundSetup, primarySteps } from '../../demo/setup';
 import { Walktour } from '../../src/components/Walktour';
 import { withKnobs, boolean } from '@storybook/addon-knobs';
 import { buttonStepIndex } from '../utils/setup';
+import { Step } from '../../src/components/Walktour';
 
 const playgroundDecorator = (storyFunction: () => Node) => <>
   {playgroundSetup({ buttonText: "Click Me", onButtonClick: () => alert("Thanks!") })}
   {storyFunction()}
 </>
-
+const singleButtonStep = (description: string, title?: string): Step[] => [{selector: '#one', title: title, description: description, hideNext: true, hidePrev: true, hideClose: true}];
 export default {
   title: "Walktour|Options/Interaction",
   component: Walktour,
@@ -51,5 +52,11 @@ export const disableActions = () => (
     disableNext={boolean('disableNext', false)}
     disablePrev={boolean('disablePrev', false)}
     disableClose={boolean('disableClose', true)}
+  />
+)
+
+export const hideButtons = () => (
+  <Walktour 
+  steps={singleButtonStep('Show/Hide the buttons by defining booleans within the step', 'Show/Hide Buttons')}
   />
 )

@@ -54,6 +54,9 @@ export interface Step extends WalktourOptions {
   selector: string;
   title?: string;
   description: string;
+  hideNext?: boolean;
+  hidePrev?: boolean; 
+  hideClose?: boolean;
 }
 
 export interface WalktourProps extends WalktourOptions {
