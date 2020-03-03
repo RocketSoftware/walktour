@@ -21,7 +21,7 @@ export function Mask(props: MaskProps): JSX.Element {
   const {width: containerWidth, height: containerHeight} = getViewportScrollDims(tourRoot);
   const pathId = `clip-path-${maskId}`;
 
-  const calculateCutout = (target: HTMLElement): string => {
+  const calculateCutout = (target: HTMLElement, primary: boolean): string => {
     if (!target) {
       return '';
     }
@@ -33,7 +33,7 @@ export function Mask(props: MaskProps): JSX.Element {
     const cutoutLeft: number = coords.x - padding;
     const cutoutRight: number = coords.x + targetDims.width + padding;
     const cutoutBottom: number = coords.y + targetDims.height + padding;
-
+    if (primary) {
     return `${cutoutLeft} ${containerHeight}, 
             ${cutoutLeft} ${cutoutTop}, 
             ${cutoutRight} ${cutoutTop}, 
@@ -42,6 +42,15 @@ export function Mask(props: MaskProps): JSX.Element {
             ${cutoutLeft} ${containerHeight}, 
             ${containerWidth} ${containerHeight}, 
             ${containerWidth} 0`;
+    }else{
+      return `${cutoutLeft} ${containerHeight}, 
+            ${cutoutLeft} ${cutoutTop}, 
+            ${cutoutRight} ${cutoutTop}, 
+            ${cutoutRight} ${cutoutBottom}, 
+            ${cutoutLeft} ${cutoutBottom}, 
+            ${cutoutLeft} ${containerHeight}, 
+            ${containerWidth} 0`;
+    }
   }
 
   const getCutoutPoints = (target: HTMLElement): string => {
@@ -52,12 +61,12 @@ export function Mask(props: MaskProps): JSX.Element {
     if (secondaryTargets === undefined) {
       return `0 0, 
               0 ${containerHeight}, 
-              ` + calculateCutout(target);
+              ` + calculateCutout(target, true);
     }else{
       return `0 0, 
             0 ${containerHeight},` +
-            calculateCutout(target) + `,` + secondaryTargets.map((secondaryTarget) => {
-              return calculateCutout(secondaryTarget);
+            calculateCutout(target, true) + `,` + secondaryTargets.map((secondaryTarget) => {
+              return calculateCutout(secondaryTarget, false);
             });
     }
   }
