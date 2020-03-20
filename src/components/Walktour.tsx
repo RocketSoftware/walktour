@@ -243,7 +243,7 @@ export const Walktour = (props: WalktourProps) => {
     }
 
     //focus trap subroutine
-    const cleanupFocusTrap = setFocusTrap(tooltipContainer, currentTarget, disableMaskInteraction);
+    const cleanupFocusTrap = setFocusTrap(tooltipContainer, currentTarget, secondaryTargets, disableMaskInteraction);
     cleanupRefs.current.push(cleanupFocusTrap);
 
     if (shouldScroll({

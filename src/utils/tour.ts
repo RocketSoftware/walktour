@@ -73,7 +73,7 @@ function getFocusTrapHandler(args: FocusTrapArgs): (e: KeyboardEvent) => void {
   }
 }
 
-export const setFocusTrap = (tooltipContainer: HTMLElement, target?: HTMLElement, disableMaskInteraction?: boolean): (() => void) => {
+export const setFocusTrap = (tooltipContainer: HTMLElement, target?: HTMLElement, secondaryTargets?: HTMLElement[], disableMaskInteraction?: boolean): (() => void) => {
   if (!tooltipContainer) {
     return;
   }
@@ -88,8 +88,30 @@ export const setFocusTrap = (tooltipContainer: HTMLElement, target?: HTMLElement
   if (target && !disableMaskInteraction && targetFirst && targetLast) {
     tooltipAfterEnd = targetFirst;
     tooltipBeforeStart = targetLast;
-    targetTrapHandler = getFocusTrapHandler({ start: targetFirst, end: targetLast, beforeStart: tooltipLast, afterEnd: tooltipFirst })
+    if (secondaryTargets != undefined) {
+      targetTrapHandler = getFocusTrapHandler({ start: targetFirst, end: targetLast, beforeStart: tooltipLast, afterEnd: secondaryTargets[0] })
+    } else {
+      targetTrapHandler = getFocusTrapHandler({ start: targetFirst, end: targetLast, beforeStart: tooltipLast, afterEnd: tooltipFirst })
+    }
     target.addEventListener('keydown', targetTrapHandler);
+  }
+
+  if (secondaryTargets != undefined && !disableMaskInteraction) {
+
+    secondaryTargets.forEach((target, index) => {
+        if (index === 0) {
+          targetTrapHandler = getFocusTrapHandler({ start: undefined, end: undefined, beforeStart: targetFirst, afterEnd: secondaryTargets[index + 1] })
+          target.addEventListener('keydown', targetTrapHandler);
+        }
+        if (index > 0 && secondaryTargets.length - 1 > index) {
+          targetTrapHandler = getFocusTrapHandler({ start: undefined, end: undefined, beforeStart: secondaryTargets[index - 1], afterEnd: secondaryTargets[index + 1] })
+          target.addEventListener('keydown', targetTrapHandler);
+        }
+        if (index === secondaryTargets.length - 1) {
+          targetTrapHandler = getFocusTrapHandler({ start: undefined, end: undefined, beforeStart: secondaryTargets[index - 1], afterEnd: tooltipFirst })
+          target.addEventListener('keydown', targetTrapHandler);
+        }
+    });
   }
 
   const tooltipTrapHandler = getFocusTrapHandler({ start: tooltipFirst, end: tooltipLast, beforeStart: tooltipBeforeStart, afterEnd: tooltipAfterEnd, lightningRod: tooltipContainer });
