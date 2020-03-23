@@ -237,13 +237,13 @@ export const Walktour = (props: WalktourProps) => {
     targetSize.current = currentTargetDims;
 
     if (secondarySelectors !== undefined) {
-    setSecondaryTargets(secondarySelectors.map(secondarySelector => targetScope.querySelector(secondarySelector)));
-    }else{
-      setSecondaryTargets(undefined);
-    }
+      setSecondaryTargets(secondarySelectors.map(secondarySelector => targetScope.querySelector(secondarySelector)));
+      }else{
+        setSecondaryTargets(undefined);
+      }
 
     //focus trap subroutine
-    const cleanupFocusTrap = setFocusTrap(tooltipContainer, currentTarget, secondaryTargets, disableMaskInteraction);
+    const cleanupFocusTrap = setFocusTrap(tooltipContainer, currentTarget, secondarySelectors, targetScope, disableMaskInteraction);
     cleanupRefs.current.push(cleanupFocusTrap);
 
     if (shouldScroll({

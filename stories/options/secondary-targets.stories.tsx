@@ -21,7 +21,6 @@ const steps: { [index: string]: () => Step[] } = {
 }
 
 const basicTour = (open?: boolean, close?: () => void, stepsOverride?: Step[]) => <Walktour disableCloseOnClick disableMaskInteraction={false} identifier="1" customCloseFunc={close} isOpen={open} steps={steps.default()} />
-const scopedTour = (rootSelector: string) => <Walktour rootSelector={rootSelector} identifier="2" steps={steps.defaultSecondary()} />
 
 export const full = () => {
   const [tourOpen, setTourOpen] = React.useState<boolean>(true);
@@ -30,7 +29,6 @@ export const full = () => {
     <>
       {playgroundSetup({ buttonText: "Toggle Tour", onButtonClick: () => setTourOpen(!tourOpen) })}
       {basicTour(tourOpen, () => setTourOpen(false), primaryIntoSecondary())}
-      {scopedTour("#demo-container")}
     </>
   )
 }
