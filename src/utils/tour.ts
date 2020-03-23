@@ -73,13 +73,17 @@ function getFocusTrapHandler(args: FocusTrapArgs): (e: KeyboardEvent) => void {
   }
 }
 
-export const setFocusTrap = (tooltipContainer: HTMLElement, target?: HTMLElement, disableMaskInteraction?: boolean): (() => void) => {
+export const setFocusTrap = (tooltipContainer: HTMLElement, target?: HTMLElement, secondarySelectors?: string[], targetScope?: Element | Document, disableMaskInteraction?: boolean): (() => void) => {
   if (!tooltipContainer) {
     return;
   }
 
   const { start: tooltipFirst, end: tooltipLast } = getEdgeFocusables(tooltipContainer, tooltipContainer);
-  const { start: targetFirst, end: targetLast } = getEdgeFocusables(undefined, target, true);
+  const { start: targetFirst, end: targetLast } = getEdgeFocusables(undefined, target, false);
+  
+  const secondaryTargets: Array<HTMLElement> = secondarySelectors ? secondarySelectors.map((selector) => {
+    return targetScope.querySelector(selector);
+  }): undefined;
 
   let tooltipBeforeStart: HTMLElement;
   let tooltipAfterEnd: HTMLElement;
@@ -88,13 +92,65 @@ export const setFocusTrap = (tooltipContainer: HTMLElement, target?: HTMLElement
   if (target && !disableMaskInteraction && targetFirst && targetLast) {
     tooltipAfterEnd = targetFirst;
     tooltipBeforeStart = targetLast;
-    targetTrapHandler = getFocusTrapHandler({ start: targetFirst, end: targetLast, beforeStart: tooltipLast, afterEnd: tooltipFirst })
+    if (secondaryTargets != undefined) {
+      targetTrapHandler = getFocusTrapHandler({ start: targetFirst, end: targetLast, beforeStart: tooltipLast, afterEnd: secondaryTargets[0] });
+    } else {
+      targetTrapHandler = getFocusTrapHandler({ start: targetFirst, end: targetLast, beforeStart: tooltipLast, afterEnd: tooltipFirst });
+    }
+
     target.addEventListener('keydown', targetTrapHandler);
+  }
+
+  if (secondaryTargets != undefined && !disableMaskInteraction) {
+    let secondaryFocusables: any[] = [];
+    let secondaryEventListeners: any[] = [];
+
+    secondaryTargets.forEach((secondaryTarget) => {
+      const { start: secondaryTargetFirst, end: secondaryTargetLast } = getEdgeFocusables(undefined, secondaryTarget, true);
+      if (secondaryTargetFirst && secondaryTargetLast) {
+        secondaryFocusables.push({start: secondaryTargetFirst, end: secondaryTargetLast, target: secondaryTarget});
+      }
+    });
+
+    if (secondaryFocusables.length === 1) {
+      targetTrapHandler = getFocusTrapHandler({ start: secondaryFocusables[0].start, end: secondaryFocusables[0].end, beforeStart: targetLast, afterEnd: tooltipFirst });
+      secondaryFocusables[0].target.addEventListener('keydown', targetTrapHandler);
+      secondaryEventListeners.push({handler: targetTrapHandler, target: secondaryFocusables[0].target});
+    }
+
+    if (secondaryFocusables.length > 1) {
+      secondaryFocusables.forEach((focusable, index) => {
+        if (index === 0) {
+          targetTrapHandler = getFocusTrapHandler({ start: focusable.start, end: focusable.end, beforeStart: targetFirst, afterEnd: secondaryFocusables[index + 1].start });
+        }
+        if (index > 0 && secondaryFocusables.length - 1 > index) {
+          targetTrapHandler = getFocusTrapHandler({ start: focusable.start, end: focusable.end, beforeStart: secondaryFocusables[index - 1].end, afterEnd: secondaryFocusables[index + 1].start });
+        }
+        if (index === secondaryFocusables.length - 1) {
+          targetTrapHandler = getFocusTrapHandler({ start: focusable.start, end: focusable.end, beforeStart: secondaryFocusables[index - 1].end, afterEnd: tooltipFirst });
+        }
+        focusable.target.addEventListener('keydown', targetTrapHandler);
+        secondaryEventListeners.push({handler: targetTrapHandler, target: focusable.target});
+      });
+    }
+    const tooltipTrapHandler = getFocusTrapHandler({ start: tooltipFirst, end: tooltipLast, beforeStart: targetFirst && targetLast ? tooltipBeforeStart : secondaryFocusables[secondaryFocusables.length - 1].end, afterEnd: targetFirst && targetLast ? tooltipAfterEnd : secondaryFocusables[0].start, lightningRod: tooltipContainer });
+    tooltipContainer.addEventListener('keydown', tooltipTrapHandler);
+    return () => {
+      if (target) {
+        target.removeEventListener('keydown', targetTrapHandler);
+      }
+      if (secondaryTargets) {
+        secondaryEventListeners.forEach((listener) => {
+          listener.target.removeEventListener('keydown', listener.handler);
+        })
+      }
+
+      tooltipContainer.removeEventListener('keydown', tooltipTrapHandler);
+    }
   }
 
   const tooltipTrapHandler = getFocusTrapHandler({ start: tooltipFirst, end: tooltipLast, beforeStart: tooltipBeforeStart, afterEnd: tooltipAfterEnd, lightningRod: tooltipContainer });
   tooltipContainer.addEventListener('keydown', tooltipTrapHandler);
-
   return () => {
     if (target) {
       target.removeEventListener('keydown', targetTrapHandler);
