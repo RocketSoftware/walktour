@@ -401,6 +401,7 @@ export const Walktour = (props: WalktourProps) => {
             id={getIdString(baseTooltipContainerString, identifier)}
             style={tooltipContainerStyle}
             onKeyDown={keyPressHandler}
+            tabIndex={0}
           >
             {customTooltipRenderer
               ? customTooltipRenderer(tourLogic)
