@@ -133,7 +133,10 @@ export const setFocusTrap = (tooltipContainer: HTMLElement, target?: HTMLElement
         secondaryEventListeners.push({handler: targetTrapHandler, target: focusable.target});
       });
     }
-    const tooltipTrapHandler = getFocusTrapHandler({ start: tooltipFirst, end: tooltipLast, beforeStart: targetFirst && targetLast ? tooltipBeforeStart : secondaryFocusables[secondaryFocusables.length - 1].end, afterEnd: targetFirst && targetLast ? tooltipAfterEnd : secondaryFocusables[0].start, lightningRod: tooltipContainer });
+
+    const lastIndex = secondaryFocusables.length === 1 ? 0 : secondaryFocusables.length - 1;
+
+    const tooltipTrapHandler = getFocusTrapHandler({ start: tooltipFirst, end: tooltipLast, beforeStart: targetFirst && targetLast ? tooltipBeforeStart : secondaryFocusables[lastIndex].end, afterEnd: targetFirst && targetLast ? tooltipAfterEnd : secondaryFocusables[0].start, lightningRod: tooltipContainer });
     tooltipContainer.addEventListener('keydown', tooltipTrapHandler);
     return () => {
       if (target) {
