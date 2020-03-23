@@ -133,19 +133,22 @@ export const setFocusTrap = (tooltipContainer: HTMLElement, target?: HTMLElement
         secondaryEventListeners.push({handler: targetTrapHandler, target: focusable.target});
       });
     }
-    const tooltipTrapHandler = getFocusTrapHandler({ start: tooltipFirst, end: tooltipLast, beforeStart: targetFirst && targetLast ? tooltipBeforeStart : secondaryFocusables[secondaryFocusables.length - 1].end, afterEnd: targetFirst && targetLast ? tooltipAfterEnd : secondaryFocusables[0].start, lightningRod: tooltipContainer });
-    tooltipContainer.addEventListener('keydown', tooltipTrapHandler);
-    return () => {
-      if (target) {
-        target.removeEventListener('keydown', targetTrapHandler);
-      }
-      if (secondaryTargets) {
-        secondaryEventListeners.forEach((listener) => {
-          listener.target.removeEventListener('keydown', listener.handler);
-        })
-      }
+    
+    if (secondaryFocusables.length > 0) {
+      const tooltipTrapHandler = getFocusTrapHandler({ start: tooltipFirst, end: tooltipLast, beforeStart: targetFirst && targetLast ? tooltipBeforeStart : secondaryFocusables[secondaryFocusables.length - 1].end, afterEnd: targetFirst && targetLast ? tooltipAfterEnd : secondaryFocusables[0].start, lightningRod: tooltipContainer });
+      tooltipContainer.addEventListener('keydown', tooltipTrapHandler);
+      return () => {
+        if (target) {
+          target.removeEventListener('keydown', targetTrapHandler);
+        }
+        if (secondaryTargets) {
+          secondaryEventListeners.forEach((listener) => {
+            listener.target.removeEventListener('keydown', listener.handler);
+          })
+        }
 
-      tooltipContainer.removeEventListener('keydown', tooltipTrapHandler);
+        tooltipContainer.removeEventListener('keydown', tooltipTrapHandler);
+      }
     }
   }
 

@@ -9,7 +9,7 @@ export default {
 
 const primarySteps = (): Step[] => [
     { selector: '#one', title: 'Guided Tour Component', description: 'Welcome to the tour!', secondarySelectors: ['#two', '#three', '.four', '#five', '#six', '#nine']},
-    { selector: '#two', title: 'Keyboard Navigation', description: 'Use the arrow keys or tab to a specific button', secondarySelectors: ['#one', '.four', '#nine'] },
+    { selector: '#two', title: 'Keyboard Navigation', description: 'Use the arrow keys or tab to a specific button', secondarySelectors: ['#one', '.four'] },
     { selector: "#three", description:"this is a test", secondarySelectors: ['#two', '.four', '#five', '#six', '#nine'] },
     { selector: "#nine", title: "Accessibility!", description: "The tooltip traps focus for keyboard users. The trap includes the target element(s)!" },
     { selector: '.four', title: 'Full CSS Selector Support', description: 'Any valid query selector works for targeting elements' },
