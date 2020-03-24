@@ -158,6 +158,13 @@ export const Walktour = (props: WalktourProps) => {
     return cleanup;
   }, []);
 
+  //Tooltip focus side effect
+  React.useEffect(() => {
+    if (tooltip.current) {
+      tooltip.current.focus();
+    }
+  }, [tooltip.current, currentStepIndex])
+
   // set/reset the tour root 
   React.useEffect(() => {
     let root: Element;
@@ -191,7 +198,6 @@ export const Walktour = (props: WalktourProps) => {
       })
     }
     if (tooltip.current && tourOpen) {
-      tooltip.current.focus();
       updateTour();
     } else {
       cleanup();

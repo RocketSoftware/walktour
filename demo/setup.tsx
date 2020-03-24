@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Step, WalktourLogic } from '../src/components/Walktour';
 import { CardinalOrientation } from '../src/utils/positioning';
 interface demoOptions {
@@ -17,6 +17,13 @@ export const playgroundSetup = (args: demoOptions) => {
   const sevenStyle: React.CSSProperties = { background: 'linear-gradient(to right, red, white, blue)', width: 200, height: 100, left: 169, top: 1776, position: 'absolute', }
   const eightStyle: React.CSSProperties = { background: 'transparent', width: 200, height: 100, left: 10, top: 650, position: 'absolute', border: '5px dotted black', borderRadius: '5px' }
   const formStyle: React.CSSProperties = { position: 'absolute', left: 450, top: 200, border: 'solid black 1px', display: 'flex', flexDirection: "column", padding: '1rem' }
+  
+  const [inputField, setInputField] = useState('');
+  
+  const handleInputOnChange = (e: any) => {
+    setInputField(e.target.value);
+  }
+
   return (
     <>
       <div id={'one'} style={oneStyle} />
@@ -33,7 +40,7 @@ export const playgroundSetup = (args: demoOptions) => {
         <button onClick={() => alert('No mouse required')} >
           Focusable Button
         </button>
-        <input type="text" placeholder="focusable text box" />
+        <input type="text" value={inputField} onChange={handleInputOnChange} placeholder="focusable text box" />
         <button disabled onClick={() => alert('disabled')}>
           Disabled (not focusable)
         </button>
